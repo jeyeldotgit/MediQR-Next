@@ -32,7 +32,7 @@ export default function DashboardClient() {
       title: "Profile Information",
       description: "View and update your personal details and medical info.",
       icon: <User size={28} />,
-      href: "/patient/profile",
+      href: "/patient-profile",
       buttonText: "Go to Profile",
     },
     {
@@ -40,7 +40,7 @@ export default function DashboardClient() {
       description:
         "Generate and download your MediQR code for emergency access.",
       icon: <QrCode size={28} />,
-      href: "/patient/qr",
+      href: "/patient-qr",
       buttonText: "Open QR Code",
     },
     {

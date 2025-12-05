@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import { UIContainer, UIButton } from "../components/ui/general/UIComponent";
+import { UIContainer, UIButton, UILoading } from "../components/ui/general/UIComponent";
 import { generateMockRecords, formatDateTime } from "@/lib/utils";
 
 interface MedicalRecord {
@@ -59,12 +59,9 @@ const PatientQRCodePage = () => {
       console.log("QR Data:", qrPayload);
     }
   };
-  if (!record)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-mediqr-text/60">
-        Loading patient QR code...
-      </div>
-    );
+  if (!record) {
+    return <UILoading fullPage message="Loading patient QR code..." />;
+  }
 
   return (
     <div className="min-h-screen bg-mediqr-accent/10 p-6 flex justify-center items-center">

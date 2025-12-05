@@ -91,3 +91,32 @@ export const generateRecordDetails = (patientId: string, recordId: string) => {
 
   return record;
 };
+
+// Blood Type Formatting Utilities
+export const formatBloodType = (bloodType: string): string => {
+  const mapping: Record<string, string> = {
+    A_Pos: 'A+',
+    A_Neg: 'A-',
+    B_Pos: 'B+',
+    B_Neg: 'B-',
+    AB_Pos: 'AB+',
+    AB_Neg: 'AB-',
+    O_Pos: 'O+',
+    O_Neg: 'O-',
+  };
+  return mapping[bloodType] || bloodType;
+};
+
+export const parseBloodType = (displayValue: string): string => {
+  const mapping: Record<string, string> = {
+    'A+': 'A_Pos',
+    'A-': 'A_Neg',
+    'B+': 'B_Pos',
+    'B-': 'B_Neg',
+    'AB+': 'AB_Pos',
+    'AB-': 'AB_Neg',
+    'O+': 'O_Pos',
+    'O-': 'O_Neg',
+  };
+  return mapping[displayValue] || displayValue;
+};

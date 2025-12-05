@@ -2,17 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import {
   UIContainer,
-  UITag,
-  UICard,
+  UIBadge,
+  UILoading,
+  UIEmptyState,
+  UIGrid,
+  UIReportHeader,
+  UIDataField,
+  UIVitalCard,
+  UIContentSection,
 } from "@/app/components/ui/general/UIComponent";
 import {
   formatDateTime,
   generateMockRecords,
   simulateApiCall,
-  generateRecordDetails,
 } from "@/lib/utils";
+import {
+  ArrowLeft,
+  FileText,
+  Calendar,
+  User,
+  Heart,
+  Activity,
+  Thermometer,
+  Weight,
+  Stethoscope,
+  Pill,
+  ClipboardList,
+  Paperclip,
+  AlertCircle,
+  Download,
+} from "lucide-react";
 import type { MedicalRecord } from "../page";
 
 const SlugPatientRecordClient = () => {
@@ -33,170 +55,231 @@ const SlugPatientRecordClient = () => {
         setRecord(found);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load record:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-mediqr-text/60">
-        Loading record...
-      </div>
-    );
+  if (loading) {
+    return <UILoading fullPage message="Loading record..." />;
+  }
 
-  if (!record)
+  if (!record) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-mediqr-text/60">
-        Record not found
+      <div className="min-h-screen bg-gradient-to-br from-mediqr-accent/5 via-white to-mediqr-accent/5 flex items-center justify-center p-6">
+        <UIContainer>
+          <UIEmptyState
+            icon={AlertCircle}
+            title="Record Not Found"
+            description="The medical record you're looking for doesn't exist or has been removed."
+            action={
+              <Link href="/patient-record">
+                <button className="px-4 py-2 rounded-xl bg-mediqr text-white font-semibold hover:bg-mediqr-dark transition">
+                  Back to Records
+                </button>
+              </Link>
+            }
+          />
+        </UIContainer>
       </div>
     );
+  }
 
   return (
-    <div className="min-h-screen bg-mediqr-accent/10 p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-        {/* Report Header */}
-        <div className="bg-mediqr-accent px-6 py-5 text-white">
-          <h1 className="text-3xl font-bold">Medical Checkup Report</h1>
-          <p className="text-sm mt-1">
-            Patient ID:{" "}
-            <span className="font-semibold">{record.patientId}</span>
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-mediqr-accent/5 via-white to-mediqr-accent/5">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Navigation Header */}
+        <div className="mb-8">
+          <Link
+            href="/patient-record"
+            className="inline-flex items-center gap-2 text-mediqr-dark hover:text-mediqr transition group mb-6"
+          >
+            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition" />
+            <span className="font-medium">Back to Records</span>
+          </Link>
+
+          {/* Report Header */}
+          <UIReportHeader
+            title="Medical Checkup Report"
+            subtitle="Comprehensive patient examination record"
+            icon={FileText}
+            metadata={[
+              {
+                label: "Patient ID",
+                value: record.patientId,
+                icon: User,
+              },
+              {
+                label: "Date of Visit",
+                value: formatDateTime(record.date),
+                icon: Calendar,
+              },
+            ]}
+            badge={
+              <UIBadge variant="info" className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                {formatDateTime(record.date)}
+              </UIBadge>
+            }
+          />
         </div>
 
-        {/* Administrative Details */}
-        <section className="p-6 border-b border-mediqr-accent-light">
-          <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-4">
-            📝 Administrative Details
-          </h2>
-          <div className="grid grid-cols-2 gap-4 text-mediqr-text">
-            <div>
-              <p className="text-gray-700">
-                <span className="font-semibold">Patient Name:</span> John Doe
-              </p>
+        <div className="space-y-6">
+          {/* Administrative Details */}
+          <UIContainer>
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-mediqr-dark mb-2">Administrative Details</h2>
+              <p className="text-sm text-mediqr-text/60">Patient and visit information</p>
             </div>
-            <div>
-              <p className="text-gray-700">
-                <span className="font-semibold">Date of Birth:</span> 1990-01-01
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-700">
-                <span className="font-semibold">Sex/Gender:</span> Male
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-700">
-                <span className="font-semibold">Date of Visit:</span>{" "}
-                {formatDateTime(record.date)}
-              </p>
-            </div>
-          </div>
-        </section>
+            <UIGrid cols={2} gap="md">
+              <UIDataField
+                label="Patient Name"
+                value="John Doe"
+                icon={User}
+                iconColor="default"
+              />
+              <UIDataField
+                label="Date of Birth"
+                value="1990-01-01"
+                icon={Calendar}
+                iconColor="default"
+              />
+              <UIDataField
+                label="Sex/Gender"
+                value="Male"
+                icon={User}
+                iconColor="default"
+              />
+              <UIDataField
+                label="Date of Visit"
+                value={formatDateTime(record.date)}
+                icon={Calendar}
+                iconColor="default"
+              />
+            </UIGrid>
+          </UIContainer>
 
-        {/* Vitals */}
-        {record.vitals && (
-          <section className="p-6 border-b border-mediqr-accent-light">
-            <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-4">
-              ❤️ Vitals
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-mediqr-text">
-              {record.vitals.bloodPressure && (
-                <p>
-                  <span className="font-semibold">Blood Pressure:</span>{" "}
-                  {record.vitals.bloodPressure}
-                </p>
-              )}
-              {record.vitals.heartRate && (
-                <p>
-                  <span className="font-semibold">Heart Rate:</span>{" "}
-                  {record.vitals.heartRate} bpm
-                </p>
-              )}
-              {record.vitals.temperature && (
-                <p>
-                  <span className="font-semibold">Temperature:</span>{" "}
-                  {record.vitals.temperature} °C
-                </p>
-              )}
-              {record.vitals.weight && (
-                <p>
-                  <span className="font-semibold">Weight:</span>{" "}
-                  {record.vitals.weight} kg
-                </p>
-              )}
-            </div>
-          </section>
-        )}
+          {/* Vitals */}
+          {record.vitals && (
+            <UIContainer>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-mediqr-dark mb-2">Vital Signs</h2>
+                <p className="text-sm text-mediqr-text/60">Patient vital signs and measurements</p>
+              </div>
+              <UIGrid cols={2} gap="md" className="md:grid-cols-4">
+                {record.vitals.bloodPressure && (
+                  <UIVitalCard
+                    label="Blood Pressure"
+                    value={record.vitals.bloodPressure}
+                    icon={Activity}
+                    iconColor="red"
+                  />
+                )}
+                {record.vitals.heartRate && (
+                  <UIVitalCard
+                    label="Heart Rate"
+                    value={record.vitals.heartRate}
+                    unit="bpm"
+                    icon={Heart}
+                    iconColor="red"
+                  />
+                )}
+                {record.vitals.temperature && (
+                  <UIVitalCard
+                    label="Temperature"
+                    value={record.vitals.temperature}
+                    unit="°C"
+                    icon={Thermometer}
+                    iconColor="orange"
+                  />
+                )}
+                {record.vitals.weight && (
+                  <UIVitalCard
+                    label="Weight"
+                    value={record.vitals.weight}
+                    unit="kg"
+                    icon={Weight}
+                    iconColor="blue"
+                  />
+                )}
+              </UIGrid>
+            </UIContainer>
+          )}
 
-        {/* Diagnosis */}
-        {record.diagnosis && (
-          <section className="p-6 border-b border-mediqr-accent-light">
-            <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-3">
-              🩺 Diagnosis
-            </h2>
-            <p className="text-mediqr-text leading-relaxed">
-              {record.diagnosis}
-            </p>
-          </section>
-        )}
+          {/* Diagnosis */}
+          {record.diagnosis && (
+            <UIContentSection
+              title="Diagnosis"
+              description="Medical diagnosis and clinical findings"
+              content={record.diagnosis}
+              icon={Stethoscope}
+              iconColor="default"
+            />
+          )}
 
-        {/* Treatment */}
-        {record.treatment && (
-          <section className="p-6 border-b border-mediqr-accent-light">
-            <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-3">
-              💊 Treatment
-            </h2>
-            <p className="text-mediqr-text leading-relaxed">
-              {record.treatment}
-            </p>
-          </section>
-        )}
+          {/* Treatment */}
+          {record.treatment && (
+            <UIContentSection
+              title="Treatment"
+              description="Treatment plan and medical procedures"
+              content={record.treatment}
+              icon={Pill}
+              iconColor="green"
+            />
+          )}
 
-        {/* Medications */}
-        {(record.medications?.length ?? 0) > 0 && (
-          <section className="p-6 border-b border-mediqr-accent-light">
-            <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-3">
-              💊 Medications
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {record.medications!.map((med, i) => (
-                <UITag key={i} label={med} color="mediqr" />
-              ))}
-            </div>
-          </section>
-        )}
+          {/* Medications */}
+          {(record.medications?.length ?? 0) > 0 && (
+            <UIContainer>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-mediqr-dark mb-2">Medications</h2>
+                <p className="text-sm text-mediqr-text/60">Prescribed medications and dosages</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {record.medications!.map((med, i) => (
+                  <UIBadge key={i} variant="info" size="md" className="text-base py-2 px-4">
+                    <Pill size={14} className="mr-2" />
+                    {med}
+                  </UIBadge>
+                ))}
+              </div>
+            </UIContainer>
+          )}
 
-        {/* Notes */}
-        {record.notes && (
-          <section className="p-6 border-b border-mediqr-accent-light">
-            <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-3">
-              🗒 Notes
-            </h2>
-            <p className="text-mediqr-text leading-relaxed">{record.notes}</p>
-          </section>
-        )}
+          {/* Notes */}
+          {record.notes && (
+            <UIContentSection
+              title="Clinical Notes"
+              description="Additional notes and observations"
+              content={record.notes}
+              icon={ClipboardList}
+              iconColor="default"
+            />
+          )}
 
-        {/* Attachments */}
-        {(record.attachments?.length ?? 0) > 0 && (
-          <section className="p-6">
-            <h2 className="flex items-center gap-2 bg-mediqr-accent text-white px-3 py-1 font-semibold rounded mb-3">
-              📎 Attachments
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {record.attachments!.map((att, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-mediqr-neutral text-mediqr-text hover:bg-mediqr-accent-light transition-colors"
-                >
-                  {att}
-                </a>
-              ))}
-            </div>
-          </section>
-        )}
+          {/* Attachments */}
+          {(record.attachments?.length ?? 0) > 0 && (
+            <UIContainer>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-mediqr-dark mb-2">Attachments</h2>
+                <p className="text-sm text-mediqr-text/60">Related documents and files</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {record.attachments!.map((att, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium bg-mediqr-accent/10 text-mediqr-dark border border-mediqr-accent/20 hover:bg-mediqr-accent/20 hover:border-mediqr-accent/30 transition-all shadow-sm hover:shadow-md"
+                  >
+                    <Paperclip size={16} />
+                    {att}
+                    <Download size={14} className="opacity-60" />
+                  </a>
+                ))}
+              </div>
+            </UIContainer>
+          )}
+        </div>
       </div>
     </div>
   );

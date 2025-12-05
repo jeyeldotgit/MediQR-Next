@@ -9,6 +9,8 @@ import TagInput from "../components/ui/fill-information/TagsInput";
 import { createPatientRecord } from "@/lib/actions/patient-actions";
 
 import { Gender, BloodType } from "@/generated/prisma/enums";
+import { formatBloodType } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 type FormValues = Omit<Patient, "id" | "createdAt" | "updatedAt"> & {
   profilePhoto: File | null;
@@ -22,6 +24,8 @@ interface User {
 export default function FillPatientInfo({ user }: { user: User }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  
+  const router = useRouter();
 
   const {
     register,
@@ -84,6 +88,7 @@ export default function FillPatientInfo({ user }: { user: User }) {
       }
 
       alert("Information submitted successfully!");
+      router.push("/dashboard");
     } catch (err) {
       if (err instanceof Error) {
         alert(`Error: ${err.message}`);
@@ -226,9 +231,9 @@ export default function FillPatientInfo({ user }: { user: User }) {
               <label className={labelClass}>Blood Type</label>
               <select {...register("bloodType")} className={inputClass}>
                 <option value="">Select Blood Type</option>
-                {Object.values(BloodType).map((b) => (
-                  <option key={b} value={b}>
-                    {b}
+                {Object.entries(BloodType).map(([key, value]) => (
+                  <option key={key} value={value}>
+                    {formatBloodType(value)}
                   </option>
                 ))}
               </select>

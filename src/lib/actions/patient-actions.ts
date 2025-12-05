@@ -36,3 +36,11 @@ export const createPatientRecord = async (
     },
   });
 };
+
+export const getPatientByUserId = async (userId: string) => {
+  return await prisma.patient.findUnique({
+    where: {
+      userId,
+    },
+  });
+};
