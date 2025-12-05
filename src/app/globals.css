@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-mediqr-light: #fdecec; /* soft red background */
+  --color-mediqr: #d32f2f; /* main medical red */
+  --color-mediqr-dark: #b71c1c; /* deeper red for headers/buttons */
+  --color-mediqr-accent: #ef5350; /* lighter accent red */
+  --color-mediqr-accent-light: #ffebee; /* gentle red tint background */
+  --color-mediqr-neutral: #fafafa; /* neutral background */
+  --color-mediqr-text: #2c2c2c; /* readable dark text */
+  --color-mediqr-danger: #c62828; /* error / emergency */
+  --color-mediqr-warning: #fb8c00; /* caution / pending */
+  --color-mediqr-success: #43a047; /* success / verified */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.modern-input {
+  @apply w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-gray-50
+         focus:bg-white focus:border-mediqr-accent outline-none
+         focus:ring-2 focus:ring-mediqr-accent/40 transition shadow-sm;
+}
+.modern-label {
+  @apply block text-sm font-semibold text-mediqr-dark mb-1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.error-text {
+  @apply text-red-500 text-sm mt-1;
 }
